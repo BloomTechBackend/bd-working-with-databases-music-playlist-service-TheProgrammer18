@@ -1,1 +1,68 @@
 PARTICIPANTS: use this file for creating the class diagram in mastery task 01
+
+@startuml
+title playlist
+
+class AddSongToPlaylistActivity {
+    + handleRequest(AddSongToPlaylistRequest) : AddSongToPlaylistResult
+}
+
+class CreatePlaylistActivity {
+    + handleRequest(final CreatePlaylistRequest createPlaylistRequest, Context context) : CreatePlaylistResult
+}
+
+class GetPlaylistActivity {
+    + handleRequest(final GetPlaylistRequest GetPlaylistRequest, Context context) : GetPlaylistResult
+}
+
+class GetPlaylistSongsActivity {
+    + handleRequest(GetPlaylistSongsRequest getPlaylistSongsRequest, Context context) : GetPlaylistSongsResult
+}
+
+class UpdatePlaylistActivity {
+    + handleRequest(UpdatePlaylistRequest updatePlaylistRequest, Context context) : UpdatePlaylistResult
+}
+
+class AlbumTrackDao {
+    - dynamoDbMapper : DynamoDBMapper
+}
+
+class PlaylistDao {
+    dynamoDbMapper : DynamoDBMapper
+    + getPlaylist(String id) : Playlist
+
+}
+
+class AlbumTrackNotFoundException {
+}
+
+class InvalidAttributeValueException {
+}
+
+class PlaylistNotFoundException {
+}
+
+class AlbumTrack {
+    @DynamoDBHashKey asin : String
+    @DynamoDBRangeKey trackNumber : Integer
+    albumName : String
+    songTitle : String
+}
+
+class Playlist {
+    @DynamoDBHashKey id : String
+    name : String
+    customerId : String
+    songCount : Integer
+    tags : Set<String>
+    songList : List<AlbumTrack>
+}
+
+AlbumTrack --o Playlist
+AddSongToPlaylistActivity --> AlbumTrackDao
+CreatePlaylistActivity *-- PlaylistDao
+AddSongToPlaylistActivity *-- PlaylistDao
+GetPlaylistActivity *-- PlaylistDao
+PlaylistDao --* GetPlaylistSongsActivity
+UpdatePlaylistActivity --> PlaylistDao
+@enduml
