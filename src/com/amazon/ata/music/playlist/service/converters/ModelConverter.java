@@ -15,7 +15,15 @@ public class ModelConverter {
     public PlaylistModel toPlaylistModel(Playlist playlist) {
         ArrayList<String> tags  = new ArrayList<>();
         if (playlist.getTags().isEmpty()) {
-            tags = null;
+            return PlaylistModel.builder()
+                    .withId(playlist.getId())
+                    .withName(playlist.getName())
+                    .withCustomerId(playlist.getCustomerId())
+                    .withSongCount(playlist.getSongCount())
+                    .withCustomerId(playlist.getCustomerId())
+                    .withSongCount(playlist.getSongCount())
+                    .withTags(tags)
+                    .build();
         }
         for (String tag : playlist.getTags()) {
             tags.add(tag);
@@ -23,6 +31,8 @@ public class ModelConverter {
         return PlaylistModel.builder()
             .withId(playlist.getId())
                 .withName(playlist.getName())
+                .withCustomerId(playlist.getCustomerId())
+                .withSongCount(playlist.getSongCount())
                 .withCustomerId(playlist.getCustomerId())
                 .withSongCount(playlist.getSongCount())
                 .withTags(tags)

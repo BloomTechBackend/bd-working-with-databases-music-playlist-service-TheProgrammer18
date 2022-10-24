@@ -5,7 +5,7 @@ package com.amazon.ata.music.playlist.service.exceptions;
  */
 public class PlaylistNotFoundException extends RuntimeException {
 
-    private static final long serialVersionUID = -912326717789387971L;
+    private static final long serialVersionUID = -5319581367555807438L;
 
     /**
      * Exception with no message or cause.

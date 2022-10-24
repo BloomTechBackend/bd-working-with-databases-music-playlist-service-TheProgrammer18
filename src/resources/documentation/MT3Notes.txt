@@ -1,0 +1,17 @@
+provideCreatePlaylistActivity --> providePlaylistDao --> provideDynamoDBMapper
+
+provideGetPlaylistActivity --> providePlaylistDao --> provideDynamoDBMapper
+
+provideUpdatePlaylistActivity --> providePlaylistDao --> provideDynamoDBMapper
+
+provideAddSongToPlaylistActivity --> providePlaylistDao --> provideDynamoDBMapper
+
+provideAddSongToPlaylistActivity --> provideAlbumTrackDao --> provideDynamoDBMapper
+
+provideGetPlaylistSongsActivity --> providePlaylistDao --> provideDynamoDBMapper
+
+providePlaylistDao --> provideDynamoDBMapper
+
+provideAlbumTrackDao --> provideDynamoDBMapper
+
+provideDynamoDBMapper

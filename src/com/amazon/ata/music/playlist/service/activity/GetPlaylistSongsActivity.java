@@ -10,6 +10,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.inject.Inject;
 import java.util.Collections;
 
 /**
@@ -26,6 +27,7 @@ public class GetPlaylistSongsActivity implements RequestHandler<GetPlaylistSongs
      *
      * @param playlistDao PlaylistDao to access the playlist table.
      */
+    @Inject
     public GetPlaylistSongsActivity(PlaylistDao playlistDao) {
         this.playlistDao = playlistDao;
     }
@@ -42,8 +44,7 @@ public class GetPlaylistSongsActivity implements RequestHandler<GetPlaylistSongs
      */
     @Override
     public GetPlaylistSongsResult handleRequest(final GetPlaylistSongsRequest getPlaylistSongsRequest, Context context) {
-        log.info("Received GetPlaylistSongsRequest {}", getPlaylistSongsRequest);
-
+        log.info("Received GetPlaylistSongsRequest {}" , getPlaylistSongsRequest);
         return GetPlaylistSongsResult.builder()
                 .withSongList(Collections.singletonList(new SongModel()))
                 .build();

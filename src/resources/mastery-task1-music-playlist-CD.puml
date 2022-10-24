@@ -42,6 +42,12 @@ class InvalidAttributeValueException {
 class PlaylistNotFoundException {
 }
 
+class InvalidAttributeChangeException {
+}
+
+class InvalidAttributeException {
+}
+
 class AlbumTrack {
     @DynamoDBHashKey asin : String
     @DynamoDBRangeKey trackNumber : Integer
@@ -65,4 +71,6 @@ AddSongToPlaylistActivity *-- PlaylistDao
 GetPlaylistActivity *-- PlaylistDao
 PlaylistDao --* GetPlaylistSongsActivity
 UpdatePlaylistActivity --> PlaylistDao
+InvalidAttributeChangeException --|> InvalidAttributeException
+InvalidAttributeValueException --|> InvalidAttributeException
 @enduml

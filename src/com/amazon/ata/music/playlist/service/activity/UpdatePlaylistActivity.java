@@ -1,5 +1,10 @@
 package com.amazon.ata.music.playlist.service.activity;
 
+import com.amazon.ata.music.playlist.service.converters.ModelConverter;
+import com.amazon.ata.music.playlist.service.dynamodb.models.Playlist;
+import com.amazon.ata.music.playlist.service.exceptions.InvalidAttributeChangeException;
+import com.amazon.ata.music.playlist.service.exceptions.InvalidAttributeException;
+import com.amazon.ata.music.playlist.service.exceptions.InvalidAttributeValueException;
 import com.amazon.ata.music.playlist.service.models.PlaylistModel;
 import com.amazon.ata.music.playlist.service.models.requests.UpdatePlaylistRequest;
 import com.amazon.ata.music.playlist.service.models.results.UpdatePlaylistResult;
@@ -9,6 +14,8 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.inject.Inject;
 
 /**
  * Implementation of the UpdatePlaylistActivity for the MusicPlaylistService's UpdatePlaylist API.
@@ -24,6 +31,7 @@ public class UpdatePlaylistActivity implements RequestHandler<UpdatePlaylistRequ
      *
      * @param playlistDao PlaylistDao to access the playlist table.
      */
+    @Inject
     public UpdatePlaylistActivity(PlaylistDao playlistDao) {
         this.playlistDao = playlistDao;
     }
@@ -47,11 +55,24 @@ public class UpdatePlaylistActivity implements RequestHandler<UpdatePlaylistRequ
      * @return updatePlaylistResult result object containing the API defined {@link PlaylistModel}
      */
     @Override
-    public UpdatePlaylistResult handleRequest(final UpdatePlaylistRequest updatePlaylistRequest, Context context) {
+    public UpdatePlaylistResult handleRequest(final UpdatePlaylistRequest updatePlaylistRequest, Context context) throws  InvalidAttributeException {
         log.info("Received UpdatePlaylistRequest {}", updatePlaylistRequest);
-
-        return UpdatePlaylistResult.builder()
-                .withPlaylist(new PlaylistModel())
-                .build();
+        Playlist playlist;
+        ModelConverter modelConverter;
+        PlaylistModel playlistModel;
+        try {
+            playlist = playlistDao.getPlaylist(updatePlaylistRequest.getId());
+            if (!playlist.getCustomerId().equals(updatePlaylistRequest.getCustomerId())) {
+                throw new InvalidAttributeChangeException();
+            }
+            modelConverter = new ModelConverter();
+            playlistModel = modelConverter.toPlaylistModel(playlist);
+        } catch (NullPointerException e) {
+            throw new InvalidAttributeValueException("Invalid value");
+        }
+            playlistModel.setName(updatePlaylistRequest.getName());
+            return UpdatePlaylistResult.builder()
+                    .withPlaylist(playlistModel)
+                    .build();
     }
 }

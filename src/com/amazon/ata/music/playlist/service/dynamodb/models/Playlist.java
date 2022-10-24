@@ -8,6 +8,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -52,6 +53,9 @@ public class Playlist {
 
     @DynamoDBAttribute(attributeName = "song_count")
     public Integer getSongCount() {
+        if (songCount == null) {
+            return 0;
+        }
         return songCount;
     }
 
@@ -61,6 +65,9 @@ public class Playlist {
 
     @DynamoDBAttribute(attributeName = "tags")
     public Set<String> getTags() {
+        if (tags == null) {
+            return Collections.emptySet();
+        }
         return tags;
     }
 

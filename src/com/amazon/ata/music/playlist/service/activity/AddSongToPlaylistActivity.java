@@ -11,6 +11,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.inject.Inject;
 import java.util.Collections;
 
 /**
@@ -22,13 +23,13 @@ public class AddSongToPlaylistActivity implements RequestHandler<AddSongToPlayli
     private final Logger log = LogManager.getLogger();
     private final PlaylistDao playlistDao;
     private final AlbumTrackDao albumTrackDao;
-
     /**
      * Instantiates a new AddSongToPlaylistActivity object.
      *
      * @param playlistDao PlaylistDao to access the playlist table.
      * @param albumTrackDao AlbumTrackDao to access the album_track table.
      */
+    @Inject
     public AddSongToPlaylistActivity(PlaylistDao playlistDao, AlbumTrackDao albumTrackDao) {
         this.playlistDao = playlistDao;
         this.albumTrackDao = albumTrackDao;
