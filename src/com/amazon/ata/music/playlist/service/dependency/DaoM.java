@@ -8,8 +8,8 @@ import dagger.Provides;
 import javax.inject.Singleton;
 
 @Module
-public class DaoModule {
-    public DaoModule() {
+public class DaoM {
+    public DaoM() {
     }
 
     @Provides
