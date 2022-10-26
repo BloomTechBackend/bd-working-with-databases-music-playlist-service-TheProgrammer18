@@ -16,6 +16,4 @@ public interface ServiceComponent {
     AddSongToPlaylistActivity provideAddSongToPlaylistActivity();
 
     GetPlaylistSongsActivity provideGetPlaylistSongsActivity();
-    MapperModule provideMapperModule();
-    DaoM provideDaoM();
 }
