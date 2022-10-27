@@ -1,5 +1,11 @@
 package com.amazon.ata.music.playlist.service.activity;
 
+import com.amazon.ata.music.playlist.service.converters.ModelConverter;
+import com.amazon.ata.music.playlist.service.dynamodb.models.AlbumTrack;
+import com.amazon.ata.music.playlist.service.dynamodb.models.Playlist;
+import com.amazon.ata.music.playlist.service.exceptions.AlbumTrackNotFoundException;
+import com.amazon.ata.music.playlist.service.exceptions.PlaylistNotFoundException;
+import com.amazon.ata.music.playlist.service.models.PlaylistModel;
 import com.amazon.ata.music.playlist.service.models.requests.AddSongToPlaylistRequest;
 import com.amazon.ata.music.playlist.service.models.results.AddSongToPlaylistResult;
 import com.amazon.ata.music.playlist.service.models.SongModel;
@@ -12,7 +18,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Implementation of the AddSongToPlaylistActivity for the MusicPlaylistService's AddSongToPlaylist API.
@@ -53,9 +62,40 @@ public class AddSongToPlaylistActivity implements RequestHandler<AddSongToPlayli
     @Override
     public AddSongToPlaylistResult handleRequest(final AddSongToPlaylistRequest addSongToPlaylistRequest, Context context) {
         log.info("Received AddSongToPlaylistRequest {} ", addSongToPlaylistRequest);
+        String asin = addSongToPlaylistRequest.getAsin();
+        String id = addSongToPlaylistRequest.getId();
+        int trackNumber = addSongToPlaylistRequest.getTrackNumber();
+        LinkedList<AlbumTrack> albumTracks = new LinkedList<>();
+        LinkedList<SongModel> songModelLinkedList = new LinkedList<>();
+
+        if (playlistDao.getPlaylist(id) == null) {
+            throw new PlaylistNotFoundException("could not find playlist with id:" + id);
+        }
+
+        if (albumTrackDao.getAlbumTrack(asin, trackNumber) == null) {
+            throw new AlbumTrackNotFoundException("could not find playlist with asin: "
+                    + asin + " or trackNumber: " + trackNumber);
+        }
+
+        AlbumTrack albumTrack = albumTrackDao.getAlbumTrack(asin, trackNumber);
+        Playlist playlist = playlistDao.getPlaylist(id);
+
+        albumTracks.addAll(playlist.getSongList());
+        albumTracks.add(albumTrack);
+        playlist.setSongList(albumTracks);
+        playlistDao.savePlaylist(playlist);
+
+        for (AlbumTrack albumTrack1 : albumTracks) {
+            SongModel temp = new ModelConverter().toSongModel(albumTrack1);
+            if (addSongToPlaylistRequest.isQueueNext()) {
+                songModelLinkedList.addFirst(temp);
+            } else {
+                songModelLinkedList.addLast(temp);
+            }
+        }
 
         return AddSongToPlaylistResult.builder()
-                .withSongList(Collections.singletonList(new SongModel()))
+                .withSongList(songModelLinkedList)
                 .build();
     }
 }

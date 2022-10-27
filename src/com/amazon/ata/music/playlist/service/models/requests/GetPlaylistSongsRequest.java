@@ -76,8 +76,8 @@ public class GetPlaylistSongsRequest {
         }
 
         public Builder withOrder(SongOrder orderToUse) {
-            this.order = orderToUse;
-            return this;
+                    this.order = orderToUse;
+                    return this;
         }
 
         public GetPlaylistSongsRequest build() { return new GetPlaylistSongsRequest(this); }
