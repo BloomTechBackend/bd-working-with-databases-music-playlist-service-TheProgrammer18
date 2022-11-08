@@ -14,6 +14,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Node;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -56,25 +57,34 @@ public class GetPlaylistSongsActivity implements RequestHandler<GetPlaylistSongs
         String id = getPlaylistSongsRequest.getId();
         List<AlbumTrack> albumTrackList;
         LinkedList<SongModel> songModels = new LinkedList<>();
-//        try {
-//            getPlaylistSongsRequest.getOrder();
-//        } catch (IllegalArgumentException e) {
-//            throw new IllegalArgumentException("Invalid Song Order: " + getPlaylistSongsRequest.getOrder());
-//        }
-        if (playlistDao.getPlaylist(id) == null) {
-            throw new PlaylistNotFoundException("could not find playlist with id: " + id);
-        }
+        SongOrder songOrder = getPlaylistSongsRequest.getOrder();
+            if (playlistDao.getPlaylist(id) == null) {
+                throw new PlaylistNotFoundException("could not find playlist with id: " + id);
+            }
 
-        Playlist playlist = playlistDao.getPlaylist(id);
+            Playlist playlist = playlistDao.getPlaylist(id);
+            albumTrackList = playlist.getSongList();
 
-        albumTrackList = playlist.getSongList();
-        for (AlbumTrack albumTrack : albumTrackList) {
-            SongModel songModel = new ModelConverter().toSongModel(albumTrack);
-            songModels.add(songModel);
-        }
+            if (songOrder == SongOrder.DEFAULT) {
+                for (AlbumTrack albumTrack : albumTrackList) {
+                    SongModel songModel = new ModelConverter().toSongModel(albumTrack);
+                    songModels.add(songModel);
+                }
+            } else if (songOrder == SongOrder.REVERSED) {
+                for (AlbumTrack albumTrack : albumTrackList) {
+                    SongModel songModel = new ModelConverter().toSongModel(albumTrack);
+                    songModels.addFirst(songModel);
+                }
+            } else {
+                for (AlbumTrack albumTrack : albumTrackList) {
+                    SongModel songModel = new ModelConverter().toSongModel(albumTrack);
+                    songModels.add(songModel);
+                }
+            }
+
 
         return GetPlaylistSongsResult.builder()
-                .withSongList(songModels)
-                .build();
+                    .withSongList(songModels)
+                    .build();
     }
 }
